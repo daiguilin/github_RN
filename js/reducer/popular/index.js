@@ -59,6 +59,7 @@ export default function onAction(state = defaultState, action) {
                     hideLoadingMore: false
                 }
             }
+
         case Types.POPULAR_LOAD_MORE_FAIL:
             return {
                 ...state,
@@ -68,6 +69,14 @@ export default function onAction(state = defaultState, action) {
                     hideLoadingMore: true
                 }
 
+            }
+        case Types.FLUSH_POPULAR_FAVORITE:
+            return {
+                ...state,
+                [action.storeName]: {
+                    ...state[action.storeName],
+                    projectModels: action.projectModels,
+                }
             }
         default:
             return state;

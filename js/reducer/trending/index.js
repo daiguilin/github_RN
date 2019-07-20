@@ -69,6 +69,14 @@ export default function onAction(state = defaultState, action) {
                 }
 
             }
+        case Types.TRENDING_FLUSH_FAVORITE:
+            return {
+                ...state,
+                [action.storeName]: {
+                    ...state[action.storeName],
+                    projectModels: action.projectModels,
+                }
+            }
         default:
             return state;
     }

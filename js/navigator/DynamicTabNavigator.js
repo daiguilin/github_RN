@@ -13,6 +13,7 @@ import {
     createBottomTabNavigator
 } from 'react-navigation';
 import { connect } from 'react-redux';
+import EventBus from 'react-native-event-bus'
 import { BottomTabBar } from 'react-navigation-tabs';//用BottomTabBar自定义底部Tab
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -22,6 +23,7 @@ import FavoritePage from '../page/FavoritePage';
 import TrendingPage from '../page/TrendingPage';
 import PopularPage from '../page/PopularPage';
 import MyPage from '../page/MyPage';
+import EventTypes from '../util/EventTypes';
 type Props = {};
 const TABS = {
     PopularPage: {
@@ -97,7 +99,14 @@ class DynamicTabNavigator extends Component<Props> {
     }
     render() {
         const Tab = this._tabNavigator();
-        return <Tab />
+        return <Tab
+            onNavigationStateChange={(prevState, newState, action) => {
+                EventBus.getInstance().fireEvent(EventTypes.bottom_tab_select, {//发送底部tab切换事件
+                    from: prevState.index,
+                    to: newState.index
+                })
+            }}
+        />
     }
 }
 //通过BottomTabBar动态设置TabBarComponent 

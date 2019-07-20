@@ -5,9 +5,11 @@ import { _projectModels, handleData } from '../ActionUtil'
  * @description: 获取最热数据的异步action
  * @param storeName
  * @param url
+ * @param pageSize
+ * @param favoriteDao
  * @return: 
  */
-export function onRefreshPopular(storeName, url, pageSize) {
+export function onRefreshPopular(storeName, url, pageSize, favoriteDao) {
     return dispatch => {
         dispatch({
             type: Types.POPULAR_REFRESH,
@@ -16,7 +18,7 @@ export function onRefreshPopular(storeName, url, pageSize) {
         let dataStore = new DataStore();
         dataStore.fetchData(url, "popular")//异步action与数据流
             .then(data => {
-                handleData(Types.POPULAR_REFRESH_SUCCESS, dispatch, storeName, data, pageSize)
+                handleData(Types.POPULAR_REFRESH_SUCCESS, dispatch, storeName, data, pageSize, favoriteDao)
             }).catch(error => {
                 dispatch({
                     type: Types.POPULAR_REFRESH_FAIL,
@@ -37,7 +39,7 @@ export function onRefreshPopular(storeName, url, pageSize) {
  * @param favoriteDao
  * @returns {function(*)} 
  */
-export function onLoadMorePopular(storeName, pageIndex, pageSize, dataArray = [], callBack) {
+export function onLoadMorePopular(storeName, pageIndex, pageSize, dataArray = [], favoriteDao, callBack) {
     return dispatch => {
         setTimeout(() => {
             if ((pageIndex - 1) * pageSize >= dataArray.length) {
@@ -53,7 +55,7 @@ export function onLoadMorePopular(storeName, pageIndex, pageSize, dataArray = []
 
             } else {
                 let max = pageIndex * pageSize > dataArray.length ? dataArray.length : pageIndex * pageSize
-                _projectModels(dataArray.slice(0, max), data => {
+                _projectModels(dataArray.slice(0, max), favoriteDao, data => {
                     dispatch({
                         type: Types.POPULAR_LOAD_MORE_SUCCESS,
                         storeName: storeName,
@@ -63,5 +65,28 @@ export function onLoadMorePopular(storeName, pageIndex, pageSize, dataArray = []
                 })
             }
         }, 1000)
+    }
+}
+/**
+ * @description: 刷新收藏状态
+ * @param storeName
+ * @param pageIndex 第几页
+ * @param pageSize 每页展示条数
+ * @param dataArray 原始数据
+ * @param favoriteDao
+ * @returns {function(*)} 
+ */
+export function onFlushPopularFavorite(storeName, pageIndex, pageSize, dataArray = [], favoriteDao) {
+    return dispatch => {
+        let max = pageIndex * pageSize > dataArray.length ? dataArray.length : pageIndex * pageSize
+        _projectModels(dataArray.slice(0, max), favoriteDao, data => {
+            dispatch({
+                type: Types.FLUSH_POPULAR_FAVORITE,
+                storeName: storeName,
+                pageIndex: pageIndex,
+                projectModels: data
+            })
+        })
+
     }
 }
