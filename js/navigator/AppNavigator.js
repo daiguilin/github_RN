@@ -11,6 +11,8 @@ import WelcomePage from '../page/WelcomePage';
 import HomePage from '../page/HomePage';
 import DetailPage from '../page/DetailPage';
 import WebViewPage from '../page/WebViewPage';
+import AboutPage from '../page/about/AboutPage';
+import AboutMePage from '../page/about/AboutMePage';
 
 export const rootCom = 'Init';//设置根路由
 
@@ -39,6 +41,18 @@ const MainNavigator = createStackNavigator({
     },
     WebViewPage: {
         screen: WebViewPage,
+        navigationOptions: {
+            header: null,
+        }
+    },
+    AboutPage: {
+        screen: AboutPage,
+        navigationOptions: {
+            header: null,
+        }
+    },
+    AboutMePage: {
+        screen: AboutMePage,
         navigationOptions: {
             header: null,
         }

@@ -11,7 +11,7 @@ import { Platform, StyleSheet, Text, View, ScrollView, TouchableOpacity } from '
 import { MORE_MENU } from '../common/MORE_MENU';
 import NavigationBar from '../common/NavigationBar';
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import GlobalStyles from '../res/GlobalStyles';
+import GlobalStyles from '../res/style/GlobalStyles';
 import ViewUtil from '../util/ViewUtil';
 import NavigationUtil from '../navigator/NavigationUtil';
 const THEME_COLOR = '#678';
@@ -25,7 +25,14 @@ export default class MyPage extends Component<Props> {
                 params.title = '教程';
                 params.url = 'https://www.imooc.com/'
                 break;
+            case MORE_MENU.About:
+                RouteName = 'AboutPage';
+                break;
+            case MORE_MENU.About_Author:
+                RouteName = 'AboutMePage';
+                break;
         }
+
         if (RouteName) {
             NavigationUtil.goPage(params, RouteName)
         }
