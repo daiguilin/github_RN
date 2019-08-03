@@ -23,32 +23,40 @@ import { FLAG_STORAGE } from '../expand/dao/DataStore';
 import FavoriteUtil from '../util/FavoriteUtil';
 import EventBus from 'react-native-event-bus';
 import EventTypes from '../util/EventTypes';
+import { FLAG_LANGUAGE } from '../expand/dao/LanguageDao';
 const favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_popular)
 const URL = 'http://api.github.com/search/repositories?q=';
 const QUERY_STR = '&sort=stars';
 const THEME_COLOR = '#678';
 type Props = {};
-export default class PopularPage extends Component<Props> {
+class PopularPage extends Component<Props> {
     constructor(props) {
         super(props);
-        console.disableYellowBox = true
-        this.tabNames = ['Java', 'Android', 'ios', 'React', 'React Native', 'Php']
+        console.disableYellowBox = true;//消除页面警告
+        const { onLoadLanguage } = this.props;
+        onLoadLanguage(FLAG_LANGUAGE.flag_key)
+        // this.tabNames = ['Java', 'Android', 'ios', 'React', 'React Native', 'Php']
     }
     //动态生成TopTabNavigator
     _genTabs() {
         const tabs = {};
-        this.tabNames.forEach((item, index) => {
-            tabs[`tab${index}`] = {
-                screen: props => <PopularTabPage {...props} tabLabel={item} />,
-                navigationOptions: {
-                    title: item
+        const { keys } = this.props;
+        keys.forEach((item, index) => {
+            if (item.checked) {
+                tabs[`tab${index}`] = {
+                    screen: props => <PopularTabPage {...props} tabLabel={item.name} />,
+                    navigationOptions: {
+                        title: item.name
+                    }
                 }
             }
+
         })
         return tabs;
     }
     render() {
-        const TabNav = createMaterialTopTabNavigator(this._genTabs(), {
+        const { keys } = this.props;
+        const TabNav = keys.length ? createMaterialTopTabNavigator(this._genTabs(), {
             //自定义tabBar的样式
             tabBarOptions: {
                 tabStyle: styles.tabStyle,
@@ -62,7 +70,8 @@ export default class PopularPage extends Component<Props> {
                 indicatorStyle: styles.indicatorStyle,//标签指示器的样式
                 labelStyle: styles.labelStyle,//文字样式
             }
-        })
+        }) : null
+        if (!TabNav) return <Text>加载中</Text>;
         const TabNavigator = createAppContainer(TabNav)
         return (
             <View style={styles.container}>
@@ -71,12 +80,23 @@ export default class PopularPage extends Component<Props> {
                     style={{ backgroundColor: THEME_COLOR }}
                     title="最热"
                 />
-                <TabNavigator />
+                {TabNav && <TabNavigator />}
             </View>
 
         );
     }
 }
+const mapPopularStateToProps = state => {
+    return {
+        keys: state.language.keys
+    }
+}
+const mapPopularDispatchToProps = dispatch => {
+    return {
+        onLoadLanguage: (flag) => dispatch(actions.onLoadLanguage(flag))
+    }
+}
+export default connect(mapPopularStateToProps, mapPopularDispatchToProps)(PopularPage)
 const pageSize = 10;//设为常量，防止修改
 class PopularTab extends Component<Props> {
     constructor(props) {

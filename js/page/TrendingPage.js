@@ -25,28 +25,37 @@ import TrendingDialog, { TimeSpans } from '../common/TrendingDialog';
 import FavoriteDao from '../expand/dao/FavoriteDao';
 import { FLAG_STORAGE } from '../expand/dao/DataStore';
 import FavoriteUtil from '../util/FavoriteUtil';
+import { FLAG_LANGUAGE } from '../expand/dao/LanguageDao';
+import ArrayUtil from '../util/ArrayUtil';
 const favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_trending)
 const URL = 'https://github.com/trending/';
 const THEME_COLOR = '#678';
 const EVENT_TYPE_TIME_SPAN_CHANGE = "EVENT_TYPE_TIME_SPAN_CHANGE"
 type Props = {};
-export default class TrendingPage extends Component<Props> {
+class TrendingPage extends Component<Props> {
     constructor(props) {
         super(props);
-        console.disableYellowBox = true
-        this.tabNames = ['JavaScript', 'c', 'python', 'vue', 'c#']
+        console.disableYellowBox = true;
+        const { onLoadLanguage } = this.props;
+        onLoadLanguage(FLAG_LANGUAGE.flag_language)
+        //this.tabNames = ['JavaScript', 'c', 'python', 'vue', 'c#']
         this.state = {
             timeSpan: TimeSpans[0]
         }
+        this.preLanguages = [];
     }
     //动态生成TopTabNavigator
     _genTabs() {
         const tabs = {};
-        this.tabNames.forEach((item, index) => {
-            tabs[`tab${index}`] = {
-                screen: props => <TrendingTabPage timeSpan={this.state.timeSpan} {...props} tabLabel={item} />,
-                navigationOptions: {
-                    title: item
+        const { languages } = this.props;
+        this.preLanguages = languages;
+        languages.forEach((item, index) => {
+            if (item.checked) {
+                tabs[`tab${index}`] = {
+                    screen: props => <TrendingTabPage timeSpan={this.state.timeSpan} {...props} tabLabel={item.name} />,
+                    navigationOptions: {
+                        title: item.name
+                    }
                 }
             }
         })
@@ -92,8 +101,9 @@ export default class TrendingPage extends Component<Props> {
         />
     }
     _tabNav() {
-        if (!this.TabNav) {
-            this.TabNav = createAppContainer(createMaterialTopTabNavigator(this._genTabs(), {
+        const { languages } = this.props;
+        if (!this.TabNav || !ArrayUtil.isEqual(this.props.languages, this.props.preLanguages)) {
+            this.TabNav = languages.length ? createAppContainer(createMaterialTopTabNavigator(this._genTabs(), {
                 //自定义tabBar的样式
                 tabBarOptions: {
                     tabStyle: styles.tabStyle,
@@ -107,7 +117,7 @@ export default class TrendingPage extends Component<Props> {
                     indicatorStyle: styles.indicatorStyle,//标签指示器的样式
                     labelStyle: styles.labelStyle,//文字样式
                 }
-            }))
+            })) : null
         }
         return this.TabNav;
     }
@@ -122,12 +132,20 @@ export default class TrendingPage extends Component<Props> {
                     title="趋势"
                 />
                 {this.renderTrendingDialog()}
-                <TabNavigator />
+                {this.TabNav && <TabNavigator />}
             </View>
 
         );
     }
 }
+const mapTrendingStateProps = state => ({
+    languages: state.language.languages
+})
+const mapTrendingDispatchToProps = dispatch => ({
+    onLoadLanguage: (flag) => dispatch(actions.onLoadLanguage(flag))
+})
+export default connect(mapTrendingStateProps, mapTrendingDispatchToProps)(TrendingPage)
+
 const pageSize = 10;//设为常量，防止修改
 class TrendingTab extends Component<Props> {
     constructor(props) {
@@ -238,7 +256,7 @@ class TrendingTab extends Component<Props> {
                 <FlatList
                     data={store.projectModels}
                     renderItem={data => this._renderItem(data)}
-                    keyExtractor={item => item.id ? "" + item.id : item.fullName}
+                    keyExtractor={item => item.item.id ? "" + item.item.id : item.item.fullName}
                     refreshControl={
                         <RefreshControl
                             title={'Loading'}
