@@ -69,7 +69,8 @@ class PopularPage extends Component<Props> {
                 },
                 indicatorStyle: styles.indicatorStyle,//标签指示器的样式
                 labelStyle: styles.labelStyle,//文字样式
-            }
+            },
+            lazy: true
         }) : null
         if (!TabNav) return <Text>加载中</Text>;
         const TabNavigator = createAppContainer(TabNav)
