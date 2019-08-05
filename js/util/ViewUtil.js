@@ -55,6 +55,21 @@ export default class ViewUtil {
             />
         </TouchableOpacity>
     }
+    /**
+     * 获取右侧文字按钮
+     * title
+     * callback
+     */
+    static getRightButton(title, callback) {
+        return (
+            <TouchableOpacity
+                style={{ alignItems: "center" }}
+                onPress={() => { callback() }}
+            >
+                <Text style={{ fontSize: 20, color: '#fff', marginRight: 10 }}>{title}</Text>
+            </TouchableOpacity>
+        )
+    }
     static getShareButton(callback) {
         return (
             <TouchableOpacity
