@@ -25,6 +25,10 @@ import { FLAG_STORAGE } from '../expand/dao/DataStore';
 import FavoriteUtil from '../util/FavoriteUtil';
 import EventTypes from '../util/EventTypes';
 
+import ToastExample from "../common/ToastExample";
+
+
+
 const URL = 'http://api.github.com/search/repositories?q=';
 const QUERY_STR = '&sort=stars';
 const THEME_COLOR = '#678';
@@ -144,6 +148,9 @@ class FavoriteTab extends Component<Props> {
         onLoadFavoriteData(this.storeName, isShowLoading)
 
     }
+    handleClick = () => {
+        ToastExample.show("Awesome", ToastExample.SHORT)
+    }
     render() {
         const { favorite } = this.props;
         let store = favorite[this.storeName];//动态获取state
@@ -188,6 +195,7 @@ class FavoriteTab extends Component<Props> {
                 <Toast ref="toast"
                     position={'center'}
                 />
+                {/* <View><Text onPress={this.handleClick}>点击显示</Text></View> */}
             </View>
         );
     }

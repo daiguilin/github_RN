@@ -4,14 +4,15 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
-import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
-import com.swmansion.reanimated.ReanimatedPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
+import com.swmansion.reanimated.ReanimatedPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.github_rn.CustomToastPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,10 +30,11 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new RNCWebViewPackage(),
-            new AsyncStoragePackage(),
-            new ReanimatedPackage(),
             new VectorIconsPackage(),
-            new RNGestureHandlerPackage()
+            new ReanimatedPackage(),
+            new RNGestureHandlerPackage(),
+            new AsyncStoragePackage(),
+            new CustomToastPackage() // <-- 添加这一行，类名替换成你的Package类的名字.
       );
     }
 
