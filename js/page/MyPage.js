@@ -15,9 +15,10 @@ import GlobalStyles from '../res/style/GlobalStyles';
 import ViewUtil from '../util/ViewUtil';
 import NavigationUtil from '../navigator/NavigationUtil';
 import { FLAG_LANGUAGE } from '../expand/dao/LanguageDao';
-const THEME_COLOR = '#678';
+import { connect } from 'react-redux';
+import actions from '../action';
 type Props = {};
-export default class MyPage extends Component<Props> {
+class MyPage extends Component<Props> {
     onClick(menu) {
         let RouteName, params = {};
         switch (menu) {
@@ -28,6 +29,18 @@ export default class MyPage extends Component<Props> {
                 break;
             case MORE_MENU.About:
                 RouteName = 'AboutPage';
+                break;
+            case MORE_MENU.Custom_Theme:
+                const { onShowCustomThemeView } = this.props;
+                onShowCustomThemeView(true);
+                break;
+            case MORE_MENU.Sort_Key:
+                RouteName = 'SortKeyPage';
+                params.flag = FLAG_LANGUAGE.flag_key
+                break;
+            case MORE_MENU.Sort_Language:
+                RouteName = 'SortKeyPage';
+                params.flag = FLAG_LANGUAGE.flag_language
                 break;
             case MORE_MENU.About_Author:
                 RouteName = 'AboutMePage';
@@ -46,15 +59,17 @@ export default class MyPage extends Component<Props> {
         }
     }
     getItem(menu) {
-        return ViewUtil.getMenuItem(() => this.onClick(menu), menu, THEME_COLOR)
+        const { theme } = this.props;
+        return ViewUtil.getMenuItem(() => this.onClick(menu), menu, theme.themeColor)
     }
     render() {
+        const { theme } = this.props;
         return (
             <View style={GlobalStyles.root_container}>
                 <NavigationBar
                     title={'我的'}
-                    statusBar={{ backgroundColor: THEME_COLOR }}
-                    style={{ backgroundColor: THEME_COLOR }}
+                    statusBar={theme.styles.navBar}
+                    style={theme.styles.navBar}
                 />
                 <ScrollView>
                     <TouchableOpacity
@@ -67,7 +82,7 @@ export default class MyPage extends Component<Props> {
                                 size={40}
                                 style={{
                                     marginRight: 10,
-                                    color: THEME_COLOR
+                                    color: theme.themeColor
                                 }}
                             />
                             <Text>Github Popular</Text>
@@ -77,7 +92,7 @@ export default class MyPage extends Component<Props> {
                             size={16}
                             style={{
                                 marginRight: 10,
-                                color: THEME_COLOR,
+                                color: theme.themeColor,
                                 alignSelf: 'center'
                             }}
                         />
@@ -126,7 +141,14 @@ export default class MyPage extends Component<Props> {
         );
     }
 }
+const mapStateToProps = state => ({
+    theme: state.theme.theme
+});
 
+const mapDispatchToProps = dispatch => ({
+    onShowCustomThemeView: (show) => dispatch(actions.onShowCustomTheme(show))
+})
+export default connect(mapStateToProps, mapDispatchToProps)(MyPage)
 const styles = StyleSheet.create({
     container: {
         flex: 1,

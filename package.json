@@ -19,6 +19,7 @@
         "react-native-htmlview": "^0.14.0",
         "react-native-parallax-scroll-view": "^0.21.3",
         "react-native-reanimated": "^1.0.1",
+        "react-native-sortable-listview": "0.2.8",
         "react-native-storage": "^1.0.1",
         "react-native-vector-icons": "^6.5.0",
         "react-native-webview": "^5.12.1",
